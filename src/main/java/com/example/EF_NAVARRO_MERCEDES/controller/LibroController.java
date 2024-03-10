@@ -4,11 +4,16 @@ import com.example.EF_NAVARRO_MERCEDES.model.Genero;
 import com.example.EF_NAVARRO_MERCEDES.model.Libro;
 import com.example.EF_NAVARRO_MERCEDES.service.GeneroService;
 import com.example.EF_NAVARRO_MERCEDES.service.LibroService;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -92,5 +97,16 @@ public class LibroController {
 
         return "libroList";
     }
+    @GetMapping("/reporte")
+    public void exportarPDF(HttpServletResponse response)throws JRException, IOException {
+        response.addHeader("Content-disposition", "inline: filename" + "libros.pdf");
+        response.setContentType("application/pdf");
+        ServletOutputStream outputStream = response.getOutputStream();
+        JasperExportManager.exportReportToPdfStream(libroService.exportReport("classpath:report_libros.jrxml"), outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
 
 }
+
+
